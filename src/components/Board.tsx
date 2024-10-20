@@ -1,14 +1,15 @@
 import { FC } from "react";
-import { useAppSelector } from "../Redux/Hooks";
-import Engine, { BoardCard } from "../utils/SequenceEngine";
+import { useAppDispatch, useAppSelector } from "../Redux/Hooks";
+import Engine, { EngineT } from "../utils/SequenceEngine";
+import { GameSliceActions } from "../Redux/slices/GameSlice";
 
-const useCurrPlayer = () => {
+const useCurrPlayer = (): [string, EngineT.Player] => {
     const currentPlayerName = useAppSelector((state) =>
         state.Game.players["player1"].isTurn ? "player1" : "player2"
     );
     const currPlayer = useAppSelector((s) => s.Game.players[currentPlayerName]);
 
-    return currPlayer;
+    return [currentPlayerName, currPlayer];
 };
 
 const Board = () => {
@@ -28,9 +29,10 @@ const Board = () => {
     );
 };
 
-const CardItem: FC<{ card: BoardCard }> = ({ card }) => {
+const CardItem: FC<{ card: EngineT.BoardCard }> = ({ card }) => {
+    const dispatch = useAppDispatch();
     const BoardCards = useAppSelector((s) => s.Game.cards);
-    const currPlayer = useCurrPlayer();
+    const [id, currPlayer] = useCurrPlayer();
     const isCurrentCardMatches = () => {
         if (currPlayer.selectedCard) {
             return Engine.Utils.isCurrentCardMatches(
@@ -42,12 +44,21 @@ const CardItem: FC<{ card: BoardCard }> = ({ card }) => {
         return false;
     };
     const onSelectCard = () => {
-        if (currPlayer.selectedCard) {
+        if (
+            currPlayer.selectedCard &&
             Engine.Utils.checkIsValidMove(currPlayer.selectedCard, card)
+        ) {
+            dispatch(
+                GameSliceActions.doMove({
+                    playerId: id,
+                    boardCard: card,
+                })
+            );
         }
     };
     return (
         <div className="card">
+            {card.isChipped && <div> Chipped</div>}
             <img
                 src={`/cards/${card.img}`}
                 style={{

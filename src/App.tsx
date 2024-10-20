@@ -1,9 +1,8 @@
-import React from "react";
+import { FC } from "react";
 import PlayerHand from "./components/PlayerHand";
-import Deck from "./components/Deck";
 import Board from "./components/Board";
 
-const App: React.FC = () => {
+const App: FC = () => {
     return (
         <div>
             <h1>Card Game</h1>

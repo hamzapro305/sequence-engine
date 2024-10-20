@@ -1,6 +1,6 @@
-import { Card } from "./SequenceEngine";
+import { EngineT } from "./SequenceEngine";
 
-const AllCards: Card[] = [
+const AllCards: EngineT.Card[] = [
     {
         id: 1,
         img: "1B.svg",
