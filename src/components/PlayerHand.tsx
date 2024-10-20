@@ -13,9 +13,14 @@ const PlayerHand: React.FC<PlayerHandProps> = ({ playerId }) => {
     const dispatch = useDispatch();
 
     const handleCardClick = (cardId: number) => {
-        dispatch(
-            GameSliceActions.selectCard({ playerId, selectedCardId: cardId })
-        );
+        if (player.isTurn) {
+            dispatch(
+                GameSliceActions.selectCard({
+                    playerId,
+                    selectedCardId: cardId,
+                })
+            );
+        }
     };
 
     return (

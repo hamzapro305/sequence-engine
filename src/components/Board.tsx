@@ -58,7 +58,7 @@ const CardItem: FC<{ card: EngineT.BoardCard }> = ({ card }) => {
     };
     return (
         <div className="card">
-            {card.isChipped && <div> Chipped</div>}
+            {card.isChipped && <div className={`chip ${card.player}`} />}
             <img
                 src={`/cards/${card.img}`}
                 style={{

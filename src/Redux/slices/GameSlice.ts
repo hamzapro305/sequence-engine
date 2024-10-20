@@ -66,6 +66,9 @@ export const Slice = createSlice({
             // Clear the player's selected card
             player.selectedCard = null;
 
+            player.isTurn = false;
+            state.players[playerId == "player1" ? "player2" : "player1"].isTurn = true
+
             console.log("Move Done");
         },
     },
