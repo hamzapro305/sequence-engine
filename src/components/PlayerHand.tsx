@@ -1,25 +1,21 @@
 import React from "react";
-import { useDispatch } from "react-redux";
-import { useAppSelector } from "../Redux/Hooks";
-import { GameSliceActions } from "../Redux/slices/GameSlice";
-import Engine from "../utils/SequenceEngine";
+import Engine, { EngineT } from "../utils/SequenceEngine";
+import { Sequence } from "../utils/Sequence";
 
 interface PlayerHandProps {
+    player: EngineT.Player;
     playerId: string;
+    engine: Sequence;
 }
 
-const PlayerHand: React.FC<PlayerHandProps> = ({ playerId }) => {
-    const player = useAppSelector((state) => state.Game.players[playerId]);
-    const dispatch = useDispatch();
-
+const PlayerHand: React.FC<PlayerHandProps> = ({
+    player,
+    engine,
+    playerId,
+}) => {
     const handleCardClick = (cardId: number) => {
         if (player.isTurn) {
-            dispatch(
-                GameSliceActions.selectCard({
-                    playerId,
-                    selectedCardId: cardId,
-                })
-            );
+            engine.selectCard(playerId, cardId);
         }
     };
 

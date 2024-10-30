@@ -1,19 +1,12 @@
 import { FC } from "react";
-import { useAppDispatch, useAppSelector } from "../Redux/Hooks";
 import Engine, { EngineT } from "../utils/SequenceEngine";
-import { GameSliceActions } from "../Redux/slices/GameSlice";
+import { Sequence } from "../utils/Sequence";
 
-const useCurrPlayer = (): [string, EngineT.Player] => {
-    const currentPlayerName = useAppSelector((state) =>
-        state.Game.players["player1"].isTurn ? "player1" : "player2"
-    );
-    const currPlayer = useAppSelector((s) => s.Game.players[currentPlayerName]);
-
-    return [currentPlayerName, currPlayer];
+type BoardT = {
+    engine: Sequence;
 };
-
-const Board = () => {
-    const BoardCards = useAppSelector((s) => s.Game.cards);
+const Board: FC<BoardT> = ({ engine }) => {
+    const BoardCards = engine.game.cards;
     return (
         <div
             className="board"
@@ -23,22 +16,23 @@ const Board = () => {
             }}
         >
             {BoardCards.map((card) => (
-                <CardItem key={card.id} card={card} />
+                <CardItem key={card.id} card={card} engine={engine} />
             ))}
         </div>
     );
 };
 
-const CardItem: FC<{ card: EngineT.BoardCard }> = ({ card }) => {
-    const dispatch = useAppDispatch();
-    const BoardCards = useAppSelector((s) => s.Game.cards);
-    const [id, currPlayer] = useCurrPlayer();
+const CardItem: FC<{ card: EngineT.BoardCard; engine: Sequence }> = ({
+    card,
+    engine,
+}) => {
+    const [id, currPlayer] = engine.getCurrPlayer();
     const isCurrentCardMatches = () => {
         if (currPlayer.selectedCard) {
-            return Engine.Utils.isCurrentCardMatches(
+            return Sequence.isCurrentCardMatches(
                 card,
                 currPlayer.selectedCard,
-                BoardCards
+                engine.game.cards
             );
         }
         return false;
@@ -46,14 +40,9 @@ const CardItem: FC<{ card: EngineT.BoardCard }> = ({ card }) => {
     const onSelectCard = () => {
         if (
             currPlayer.selectedCard &&
-            Engine.Utils.checkIsValidMove(currPlayer.selectedCard, card)
+            Sequence.checkIsValidMove(currPlayer.selectedCard, card)
         ) {
-            dispatch(
-                GameSliceActions.doMove({
-                    playerId: id,
-                    boardCard: card,
-                })
-            );
+            engine.move(id, card);
         }
     };
     return (
